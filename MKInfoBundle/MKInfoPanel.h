@@ -22,6 +22,7 @@
 
 typedef enum {    
     MKInfoPanelTypeInfo,
+    MKInfoPanelTypeSuccess,
     MKInfoPanelTypeError
 } MKInfoPanelType;
 

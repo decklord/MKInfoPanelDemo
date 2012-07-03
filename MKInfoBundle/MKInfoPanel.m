@@ -84,14 +84,20 @@
         self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" 
                                                 size:14];
         self.thumbImage.image = [UIImage imageNamed:@"Warning"];
-        self.detailLabel.textColor = [UIColor colorWithRed:1.f green:0.651f blue:0.651f alpha:1.f];
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
+    }
+    else if (type == MKInfoPanelTypeSuccess) {
+        self.backgroundGradient.image = [[UIImage imageNamed:@"Green"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+        self.thumbImage.image = [UIImage imageNamed:@"Tick"];   
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];[UIColor colorWithWhite:1.0 alpha:0.8];
     }
     
     else if(type == MKInfoPanelTypeInfo) {
         self.backgroundGradient.image = [[UIImage imageNamed:@"Blue"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
         self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-        self.thumbImage.image = [UIImage imageNamed:@"Tick"];   
-        self.detailLabel.textColor = RGBA(210, 210, 235, 1.0);
+        self.thumbImage.image = [UIImage imageNamed:@"Notice"];   
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
     }
 }
 
