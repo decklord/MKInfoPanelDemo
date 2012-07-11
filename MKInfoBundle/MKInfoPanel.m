@@ -20,6 +20,9 @@
 #import "MKInfoPanel.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define kLabelsMarginLeft       57.0
+#define kLabelsMarginRight      10.0
+
 // Private Methods
 
 @interface MKInfoPanel ()
@@ -101,6 +104,22 @@
     }
 }
 
+#pragma mark -
+#pragma mark Set Frame Dynamically
+
+- (void)setLabelsFrameForViewWidth:(CGFloat)viewWidth
+{
+    CGPoint titleLabelOrigin = self.titleLabel.frame.origin;
+    //We remove the Margin left (57 in Xib) and a convenient Margin right (10px) from the view width to get the available space
+    CGSize titleLabelSize = CGSizeMake(viewWidth - kLabelsMarginLeft - kLabelsMarginRight, self.titleLabel.frame.size.height);
+    [self.titleLabel setFrame:CGRectMake(titleLabelOrigin.x, titleLabelOrigin.y, titleLabelSize.width, titleLabelSize.height)];
+    
+    CGPoint detailLabelOrigin = self.detailLabel.frame.origin;
+    CGSize detailLabelSize = CGSizeMake(viewWidth - kLabelsMarginLeft - kLabelsMarginRight, self.detailLabel.frame.size.height);
+    [self.detailLabel setFrame:CGRectMake(detailLabelOrigin.x, detailLabelOrigin.y, detailLabelSize.width, detailLabelSize.height)];
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Show/Hide
@@ -117,6 +136,9 @@
     panel.type = type;
     panel.titleLabel.text = title;
     
+    //Set the Frame for Label and Detail Labels dynamically according to device/orientation.
+    [panel setLabelsFrameForViewWidth:view.bounds.size.width];
+    
     if(subtitle) {
         panel.detailLabel.text = subtitle;
         [panel.detailLabel sizeToFit];
@@ -126,7 +148,7 @@
     } else {
         panel.detailLabel.hidden = YES;
         panel.thumbImage.frame = CGRectMake(15, 5, 35, 35);
-        panel.titleLabel.frame = CGRectMake(57, 12, 240, 21);
+        panel.titleLabel.frame = CGRectMake(kLabelsMarginLeft, 12, view.bounds.size.width - kLabelsMarginLeft, 21);
     }
     
     // update frame of panel
