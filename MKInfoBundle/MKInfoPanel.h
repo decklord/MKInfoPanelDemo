@@ -20,42 +20,40 @@
 #import <UIKit/UIKit.h>
 #define RGBA(r, g, b, a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
 
-typedef enum {    
+typedef void (^MKVoidBlock)();
+
+typedef enum {
+    MKInfoPanelTypeToast,
     MKInfoPanelTypeInfo,
     MKInfoPanelTypeSuccess,
     MKInfoPanelTypeError
 } MKInfoPanelType;
 
-@interface MKInfoPanel : UIView {
-    
-    UILabel *_titleLabel;
-    UILabel *_detailLabel;
-    
-    UIImageView *_thumbImage;
-    UIImageView *_backgroundGradient;
-    
-    SEL _onTouched;
-    
-    id _delegate;
-    SEL _onFinished;
-    
-    MKInfoPanelType type_;
-}
+@interface MKInfoPanel : UIView
 
 @property (nonatomic, assign) IBOutlet UILabel *titleLabel;
 @property (nonatomic, assign) IBOutlet UILabel *detailLabel;
 @property (nonatomic, assign) IBOutlet UIImageView *thumbImage;
 @property (nonatomic, assign) IBOutlet UIImageView *backgroundGradient;
-@property (nonatomic, assign) SEL onTouched;
+
 @property (nonatomic, assign) id delegate;
 @property (nonatomic, assign) SEL onFinished;
+@property (nonatomic, assign) SEL onTouched;
+
+@property (nonatomic, assign) MKInfoPanelType type;
+@property (nonatomic, copy) MKVoidBlock block;
+
++ (MKInfoPanel *) infoPanel;
 
 + (MKInfoPanel *)showPanelInView:(UIView*)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle;
 + (MKInfoPanel *)showPanelInView:(UIView*)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval;
++ (MKInfoPanel *)showPanelInView:(UIView*)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval executing:(MKVoidBlock) block;
 
 + (MKInfoPanel *)showPanelInWindow:(UIWindow*)window type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle;
 + (MKInfoPanel *)showPanelInWindow:(UIWindow*)window type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval;
++ (MKInfoPanel *)showPanelInWindow:(UIView*)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval executing:(MKVoidBlock) block;
 
 - (void)hidePanel;
+- (void)setup;
 
 @end

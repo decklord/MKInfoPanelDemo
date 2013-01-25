@@ -21,32 +21,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 #define kLabelsMarginLeft       57.0
+#define kLabelsMarginLeftNoIcon 10.0
 #define kLabelsMarginRight      10.0
 
-// Private Methods
-
-@interface MKInfoPanel ()
-
-@property (nonatomic, assign) MKInfoPanelType type;
-
-+ (MKInfoPanel*) infoPanel;
-
-- (void)setup;
-
-@end
-
-
 @implementation MKInfoPanel
-
-@synthesize titleLabel = _titleLabel;
-@synthesize detailLabel = _detailLabel;
-@synthesize thumbImage = _thumbImage;
-@synthesize backgroundGradient = _backgroundGradient;
-@synthesize onTouched = _onTouched;
-@synthesize delegate = _delegate;
-@synthesize onFinished = _onFinished;
-@synthesize type = type_;
-
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -81,42 +59,60 @@
 ////////////////////////////////////////////////////////////////////////
 
 -(void)setType:(MKInfoPanelType)type {
-    if(type == MKInfoPanelTypeError) {
-        self.backgroundGradient.image = [[UIImage imageNamed:@"Red"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:14];
-        self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" 
-                                                size:14];
-        self.thumbImage.image = [UIImage imageNamed:@"Warning"];
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
-    }
-    else if (type == MKInfoPanelTypeSuccess) {
-        self.backgroundGradient.image = [[UIImage imageNamed:@"Green"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-        self.thumbImage.image = [UIImage imageNamed:@"Tick"];   
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];[UIColor colorWithWhite:1.0 alpha:0.8];
-    }
     
-    else if(type == MKInfoPanelTypeInfo) {
+    self.titleLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
+    self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
+    
+    if(type == MKInfoPanelTypeError) {
+        
+        self.backgroundGradient.image = [[UIImage imageNamed:@"Red"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
+        self.thumbImage.image = [UIImage imageNamed:@"Warning"];
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
+        
+    }else if(type == MKInfoPanelTypeSuccess) {
+        
+        self.backgroundGradient.image = [[UIImage imageNamed:@"Green"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
+        self.thumbImage.image = [UIImage imageNamed:@"Tick"];
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
+
+    }else if(type == MKInfoPanelTypeInfo) {
+        
         self.backgroundGradient.image = [[UIImage imageNamed:@"Blue"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-        self.thumbImage.image = [UIImage imageNamed:@"Notice"];   
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
+        self.thumbImage.image = [UIImage imageNamed:@"Notice"];
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
+        
+    }else if(type == MKInfoPanelTypeToast){
+        
+        self.backgroundGradient.image = nil;
+        self.thumbImage.image = nil;
+        self.thumbImage.hidden = TRUE;
+        self.titleLabel.hidden = TRUE;
+        self.backgroundColor = [UIColor blackColor];
+        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
+        self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:12];
+    
     }
+
 }
 
 #pragma mark -
 #pragma mark Set Frame Dynamically
 
-- (void)setLabelsFrameForViewWidth:(CGFloat)viewWidth
-{
+- (void)setLabelsFrameForViewWidth:(CGFloat)viewWidth{
+    
     CGPoint titleLabelOrigin = self.titleLabel.frame.origin;
-    //We remove the Margin left (57 in Xib) and a convenient Margin right (10px) from the view width to get the available space
-    CGSize titleLabelSize = CGSizeMake(viewWidth - kLabelsMarginLeft - kLabelsMarginRight, self.titleLabel.frame.size.height);
+    int leftMargin = (self.type == MKInfoPanelTypeToast)?kLabelsMarginLeftNoIcon:kLabelsMarginLeft;
+
+    CGSize titleLabelSize = CGSizeMake(viewWidth - leftMargin - kLabelsMarginRight, self.titleLabel.frame.size.height);
     [self.titleLabel setFrame:CGRectMake(titleLabelOrigin.x, titleLabelOrigin.y, titleLabelSize.width, titleLabelSize.height)];
     
     CGPoint detailLabelOrigin = self.detailLabel.frame.origin;
-    CGSize detailLabelSize = CGSizeMake(viewWidth - kLabelsMarginLeft - kLabelsMarginRight, self.detailLabel.frame.size.height);
-    [self.detailLabel setFrame:CGRectMake(detailLabelOrigin.x, detailLabelOrigin.y, detailLabelSize.width, detailLabelSize.height)];
+    int leftXPosition = (self.type == MKInfoPanelTypeToast)?kLabelsMarginLeftNoIcon:detailLabelOrigin.x;
+    int leftYPosition = (self.type == MKInfoPanelTypeToast)?titleLabelOrigin.y:detailLabelOrigin.y;
+    
+    CGSize detailLabelSize = CGSizeMake(viewWidth - leftMargin - kLabelsMarginRight, self.detailLabel.frame.size.height);
+    [self.detailLabel setFrame:CGRectMake(leftXPosition, leftYPosition, detailLabelSize.width, detailLabelSize.height)];
+    
 }
 
 
@@ -129,12 +125,24 @@
     return [self showPanelInView:view type:type title:title subtitle:subtitle hideAfter:-1];
 }
 
-+(MKInfoPanel *)showPanelInView:(UIView *)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval {    
++(MKInfoPanel *)showPanelInView:(UIView *)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval {
+
+    return [self showPanelInView:view type:type title:title subtitle:subtitle hideAfter:interval executing:nil];
+
+}
+
++(MKInfoPanel *)showPanelInView:(UIView *)view type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval executing:(MKVoidBlock)block{
+    
     MKInfoPanel *panel = [MKInfoPanel infoPanel];
     CGFloat panelHeight = 50;   // panel height when no subtitle set
     
     panel.type = type;
     panel.titleLabel.text = title;
+    panel.block = block;
+    
+    if (panel.block) {
+        panel.onTouched = @selector(executeBlock);
+    }
     
     //Set the Frame for Label and Detail Labels dynamically according to device/orientation.
     [panel setLabelsFrameForViewWidth:view.bounds.size.width];
@@ -143,7 +151,12 @@
         panel.detailLabel.text = subtitle;
         [panel.detailLabel sizeToFit];
         
-        panelHeight = MAX(CGRectGetMaxY(panel.thumbImage.frame), CGRectGetMaxY(panel.detailLabel.frame));
+        if (panel.type == MKInfoPanelTypeToast) {
+            panelHeight = panel.detailLabel.frame.size.height;
+        }else{
+            panelHeight = MAX(CGRectGetMaxY(panel.thumbImage.frame), CGRectGetMaxY(panel.detailLabel.frame));
+        }
+        
         panelHeight += 10.f;    // padding at bottom
     } else {
         panel.detailLabel.hidden = YES;
@@ -160,6 +173,7 @@
     }
     
     return panel;
+
 }
 
 + (MKInfoPanel *)showPanelInWindow:(UIWindow *)window type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle {
@@ -167,7 +181,14 @@
 }
 
 +(MKInfoPanel *)showPanelInWindow:(UIWindow *)window type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval {
-    MKInfoPanel *panel = [self showPanelInView:window type:type title:title subtitle:subtitle hideAfter:interval];
+    
+    return [self showPanelInWindow:window type:type title:title subtitle:subtitle hideAfter:interval executing:nil];
+    
+}
+
++ (MKInfoPanel *)showPanelInWindow:(UIWindow *)window type:(MKInfoPanelType)type title:(NSString *)title subtitle:(NSString *)subtitle hideAfter:(NSTimeInterval)interval executing:(MKVoidBlock) block{
+
+    MKInfoPanel *panel = [self showPanelInView:window type:type title:title subtitle:subtitle hideAfter:interval executing:block];
     
     if (![UIApplication sharedApplication].statusBarHidden) {
         CGRect frame = panel.frame;
@@ -176,9 +197,11 @@
     }
     
     return panel;
+    
 }
 
--(void)hidePanel {
+- (void) hidePanel {
+    
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     
     CATransition *transition = [CATransition animation];
@@ -190,6 +213,16 @@
     self.frame = CGRectMake(0, -self.frame.size.height, self.frame.size.width, self.frame.size.height); 
     
     [self performSelector:@selector(removeFromSuperview) withObject:nil afterDelay:0.25];
+
+}
+
+- (void) executeBlock {
+
+    [self hidePanel];
+    if (self.block != nil) {
+        self.block();
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -197,7 +230,7 @@
 #pragma mark Touch Recognition
 ////////////////////////////////////////////////////////////////////////
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self performSelector:_onTouched];
 }
 
@@ -206,10 +239,11 @@
 #pragma mark Private
 ////////////////////////////////////////////////////////////////////////
 
-+(MKInfoPanel *)infoPanel {
++ (MKInfoPanel *) infoPanel {
+
     MKInfoPanel *panel =  (MKInfoPanel*) [[[UINib nibWithNibName:@"MKInfoPanel" bundle:nil] 
                                            instantiateWithOwner:self options:nil] objectAtIndex:0];
-    
+
     CATransition *transition = [CATransition animation];
 	transition.duration = 0.25;
 	transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
@@ -218,11 +252,14 @@
 	[panel.layer addAnimation:transition forKey:nil];
     
     return panel;
+
 }
 
 - (void)setup {
+
     self.onTouched = @selector(hidePanel);
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
 }
 
 @end
