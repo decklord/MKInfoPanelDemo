@@ -151,7 +151,7 @@
         panel.detailLabel.text = subtitle;
         [panel.detailLabel sizeToFit];
         
-        if (panel.type == MKInfoPanelTypeToast) {
+        if (type == MKInfoPanelTypeToast) {
             panelHeight = panel.detailLabel.frame.size.height;
         }else{
             panelHeight = MAX(CGRectGetMaxY(panel.thumbImage.frame), CGRectGetMaxY(panel.detailLabel.frame));

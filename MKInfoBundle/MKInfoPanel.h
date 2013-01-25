@@ -23,10 +23,10 @@
 typedef void (^MKVoidBlock)();
 
 typedef enum {
-    MKInfoPanelTypeToast,
     MKInfoPanelTypeInfo,
     MKInfoPanelTypeSuccess,
-    MKInfoPanelTypeError
+    MKInfoPanelTypeError,
+    MKInfoPanelTypeToast
 } MKInfoPanelType;
 
 @interface MKInfoPanel : UIView
@@ -40,7 +40,7 @@ typedef enum {
 @property (nonatomic, assign) SEL onFinished;
 @property (nonatomic, assign) SEL onTouched;
 
-@property (nonatomic, assign) MKInfoPanelType type;
+@property (nonatomic) MKInfoPanelType type;
 @property (nonatomic, copy) MKVoidBlock block;
 
 + (MKInfoPanel *) infoPanel;
