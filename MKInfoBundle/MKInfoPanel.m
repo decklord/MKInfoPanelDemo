@@ -62,26 +62,27 @@
     
     self.titleLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
     self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
+    _type = type;
     
-    if(type == MKInfoPanelTypeError) {
+    if(self.type == MKInfoPanelTypeError) {
         
         self.backgroundGradient.image = [[UIImage imageNamed:@"Red"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
         self.thumbImage.image = [UIImage imageNamed:@"Warning"];
         self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
         
-    }else if(type == MKInfoPanelTypeSuccess) {
+    }else if(self.type == MKInfoPanelTypeSuccess) {
         
         self.backgroundGradient.image = [[UIImage imageNamed:@"Green"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
         self.thumbImage.image = [UIImage imageNamed:@"Tick"];
         self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
 
-    }else if(type == MKInfoPanelTypeInfo) {
+    }else if(self.type == MKInfoPanelTypeInfo) {
         
         self.backgroundGradient.image = [[UIImage imageNamed:@"Blue"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
         self.thumbImage.image = [UIImage imageNamed:@"Notice"];
         self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
         
-    }else if(type == MKInfoPanelTypeToast){
+    }else if(self.type == MKInfoPanelTypeToast){
         
         self.backgroundGradient.image = nil;
         self.thumbImage.image = nil;
@@ -100,21 +101,30 @@
 
 - (void)setLabelsFrameForViewWidth:(CGFloat)viewWidth{
     
-    CGPoint titleLabelOrigin = self.titleLabel.frame.origin;
-    int leftMargin = (self.type == MKInfoPanelTypeToast)?kLabelsMarginLeftNoIcon:kLabelsMarginLeft;
+    CGRect titleLabelFrame = self.titleLabel.frame;
+    CGRect detailLabelFrame = self.detailLabel.frame;
+    
+    int leftMargin = kLabelsMarginLeft;
+    int xPosition = detailLabelFrame.origin.x;
+    int yPosition = detailLabelFrame.origin.y;
+    
+    if (self.type == MKInfoPanelTypeToast){
+        
+        leftMargin = kLabelsMarginLeftNoIcon;
+        xPosition = kLabelsMarginLeftNoIcon;
+        yPosition = titleLabelFrame.origin.y;
+        
+    }
 
-    CGSize titleLabelSize = CGSizeMake(viewWidth - leftMargin - kLabelsMarginRight, self.titleLabel.frame.size.height);
-    [self.titleLabel setFrame:CGRectMake(titleLabelOrigin.x, titleLabelOrigin.y, titleLabelSize.width, titleLabelSize.height)];
+    titleLabelFrame.size.width = viewWidth - leftMargin - kLabelsMarginRight;
+    self.titleLabel.frame = titleLabelFrame;
     
-    CGPoint detailLabelOrigin = self.detailLabel.frame.origin;
-    int leftXPosition = (self.type == MKInfoPanelTypeToast)?kLabelsMarginLeftNoIcon:detailLabelOrigin.x;
-    int leftYPosition = (self.type == MKInfoPanelTypeToast)?titleLabelOrigin.y:detailLabelOrigin.y;
-    
-    CGSize detailLabelSize = CGSizeMake(viewWidth - leftMargin - kLabelsMarginRight, self.detailLabel.frame.size.height);
-    [self.detailLabel setFrame:CGRectMake(leftXPosition, leftYPosition, detailLabelSize.width, detailLabelSize.height)];
+    detailLabelFrame.size.width = viewWidth - leftMargin - kLabelsMarginRight;
+    detailLabelFrame.origin.x = xPosition;
+    detailLabelFrame.origin.y = yPosition;
+    self.detailLabel.frame = detailLabelFrame;
     
 }
-
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -169,7 +179,7 @@
     [view addSubview:panel];
     
     if (interval > 0) {
-        [panel performSelector:@selector(hidePanel) withObject:view afterDelay:interval]; 
+        [panel performSelector:@selector(hidePanel) withObject:view afterDelay:interval];
     }
     
     return panel;
