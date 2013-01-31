@@ -20,9 +20,9 @@
 #import "MKInfoPanel.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define kLabelsMarginLeft       57.0
-#define kLabelsMarginLeftNoIcon 10.0
-#define kLabelsMarginRight      10.0
+#define kLabelsMarginLeft       67.0
+#define kLabelsMarginLeftNoIcon 20.0
+#define kLabelsMarginRight      15.0
 
 @implementation MKInfoPanel
 
@@ -60,28 +60,16 @@
 
 -(void)setType:(MKInfoPanelType)type {
     
-    self.titleLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
-    self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:14];
     _type = type;
     
+    self.backgroundGradient.image = [[UIImage imageNamed:@"background_toast.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
+    
     if(self.type == MKInfoPanelTypeError) {
-        
-        self.backgroundGradient.image = [[UIImage imageNamed:@"Red"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.thumbImage.image = [UIImage imageNamed:@"Warning"];
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
-        
+        self.thumbImage.image = [UIImage imageNamed:@"icon_error.png"];
     }else if(self.type == MKInfoPanelTypeSuccess) {
-        
-        self.backgroundGradient.image = [[UIImage imageNamed:@"Green"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.thumbImage.image = [UIImage imageNamed:@"Tick"];
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
-
+        self.thumbImage.image = [UIImage imageNamed:@"icon_success.png"];
     }else if(self.type == MKInfoPanelTypeInfo) {
-        
-        self.backgroundGradient.image = [[UIImage imageNamed:@"Blue"] stretchableImageWithLeftCapWidth:1 topCapHeight:5];
-        self.thumbImage.image = [UIImage imageNamed:@"Notice"];
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
-        
+        self.thumbImage.image = [UIImage imageNamed:@"icon_info.png"];
     }else if(self.type == MKInfoPanelTypeToast){
         
         self.backgroundGradient.image = nil;
@@ -89,8 +77,6 @@
         self.thumbImage.hidden = TRUE;
         self.titleLabel.hidden = TRUE;
         self.backgroundColor = [UIColor blackColor];
-        self.detailLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1];
-        self.detailLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:12];
     
     }
 
