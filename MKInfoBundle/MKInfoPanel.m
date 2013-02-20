@@ -72,11 +72,9 @@
         self.thumbImage.image = [UIImage imageNamed:@"icon_info.png"];
     }else if(self.type == MKInfoPanelTypeToast){
         
-        self.backgroundGradient.image = nil;
         self.thumbImage.image = nil;
         self.thumbImage.hidden = TRUE;
         self.titleLabel.hidden = TRUE;
-        self.backgroundColor = [UIColor blackColor];
     
     }
 
